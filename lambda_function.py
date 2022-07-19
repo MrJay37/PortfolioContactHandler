@@ -41,14 +41,3 @@ def lambda_handler(event, context):
             "message": "Email sent successfully!"
         })
     }
-
-
-if __name__ == "__main__":
-    lambda_handler(
-        {
-            "name": "Don Joe",
-            "email": "test.email@example.com",
-            "message": "How does this look?"
-        }
-        , None
-    )
