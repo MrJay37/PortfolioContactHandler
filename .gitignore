@@ -1,0 +1,10 @@
+.venv/
+
+.idea/
+
+config.ini
+
+/*.py
+!lambda_function.py
+
+**/__pycache__/
