@@ -1,0 +1,37 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+
+  build:
+    commands:
+      # Update build environment and install packages
+      - apt update -y && apt install -y awscli zip
+
+      # remove cached package lists and temporary files
+      - apt-get clean
+      - rm -rf /var/lib/apt/lists/*
+
+      # Setup AWS CLI to give build environment access to AE S3 buckets
+      - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+      - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+      - aws configure set default.region $AWS_DEFAULT_REGION
+
+      # Setup python environment and install dependencies
+      # In Codebuild, the code pulled from the source (ie Bitbucket) is contained in the root directory of the CodeBuild environment
+      - python3 -m venv venv
+      - venv/bin/python -m pip install --upgrade pip
+      - venv/bin/pip install -r requirements.txt
+
+      # Zip only essential project files and upload to S3
+      - cd venv/lib/python3.9/site-packages/
+      - zip -r ./../../../../deployment_pkg.zip .
+      - cd ../../../../
+      - zip -r deployment_pkg.zip src lambda_function.py
+      - aws s3 cp "deployment_pkg.zip" "s3://$AWS_S3_BUCKET/deployment_pkg.zip"
+
+      # Deploy code to lambda and clean-up S3 bucket
+      - aws lambda update-function-code --function-name "$LAMBDA_FUNCTION_NAME" --s3-bucket "$AWS_S3_BUCKET" --s3-key "deployment_pkg.zip"
+      - aws s3 rm "s3://$AWS_S3_BUCKET/deployment_pkg.zip"

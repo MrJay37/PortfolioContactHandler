@@ -27,8 +27,8 @@ class DynamoDBConnector:
     def getTableInfo(self):
         return self._table.creation_date_time
 
-    def getAllMessageRecords(self):
-        return self._table.scan()
+    def getAllMessageRecords(self, **kwargs):
+        return self._table.scan(**kwargs)
 
     def insertMessageRecord(self, record):
         item_count = self.getAllMessageRecords()['Count']
