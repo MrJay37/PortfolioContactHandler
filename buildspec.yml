@@ -21,7 +21,7 @@ phases:
 
       # Setup python environment and install dependencies
       # In Codebuild, the code pulled from the source (ie Bitbucket) is contained in the root directory of the CodeBuild environment
-      - python3 -m venv venv
+      - python3.9 -m venv venv
       - venv/bin/python -m pip install --upgrade pip
       - venv/bin/pip install -r requirements.txt
 
